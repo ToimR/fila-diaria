@@ -1,2 +1,2 @@
 # fila-diaria
-Aplicação para acompanhamento de fluxo de empregado snoposto de trabalho.
+Aplicação para acompanhamento de fluxo de empregados no posto de trabalho.
