@@ -1,0 +1,161 @@
+/* Layout Principal: Tabelas e Painel Lateral */
+.main-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 20px;
+    width: 100%;
+    margin-top: 20px;
+}
+
+/* Coluna das Tabelas */
+.tables-container {
+    flex: 2; /* Ocupa a maior parte da tela */
+    min-width: 0;
+}
+
+/* Painel Lateral Sticky */
+.side-panel {
+    flex: 1.2; /* Largura para comportar as duas sub-colunas */
+    min-width: 420px; /* Garante espaço interno suficiente */
+    position: -webkit-sticky;
+    position: sticky;
+    top: 20px;
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    max-height: 90vh;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    z-index: 100;
+}
+
+/* Container das sub-colunas internas */
+.side-content-wrapper {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    height: 100%;
+}
+
+/* Sub-coluna: Lista de Confirmados */
+.column-confirmados {
+    flex: 1;
+    max-height: 85vh;
+    overflow-y: auto;
+    border-right: 1px dashed #ccc;
+    padding-right: 10px;
+}
+
+/* Sub-coluna: Bloco de Notas */
+.column-notas {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Título e Contador */
+.column-confirmados h3 {
+    margin-top: 0;
+    font-size: 0.95rem;
+    border-bottom: 2px solid #333;
+    padding-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+}
+
+#contador {
+    background: #2c3e50;
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+}
+
+/* Estilo da lista (Miniatura Meio-Termo) */
+#nomes-confirmados {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0;
+    font-size: 12.5px;
+    line-height: 1.3;
+}
+
+.item-confirmado {
+    padding: 3.5px 0;
+    border-bottom: 1px solid #eee;
+    color: #2d3436;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.item-confirmado span {
+    color: #27ae60;
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+/* Botão Limpar Compacto */
+#btn-limpar-tudo {
+    display: none;
+    width: 100%;
+    margin-top: 10px;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+/* Estilo do Post-it */
+.post-it-container {
+    background: #fef68c;
+    padding: 12px;
+    border-radius: 2px;
+    box-shadow: 2px 4px 8px rgba(0,0,0,0.1);
+    border-left: 5px solid #f1c40f;
+}
+
+.post-it-container label {
+    display: block;
+    font-size: 11px;
+    font-weight: bold;
+    color: #856404;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+
+#notas-trabalho {
+    width: 100%;
+    min-height: 180px;
+    background: transparent;
+    border: none;
+    font-size: 12.5px;
+    font-family: inherit;
+    resize: none;
+    outline: none;
+    line-height: 1.5;
+    background-image: linear-gradient(#e1d977 1px, transparent 1px);
+    background-size: 100% 1.5em;
+}
+
+/* Classe de destaque na tabela principal */
+.highlight-yellow {
+    background-color: #fff3cd !important;
+}
+
+/* Responsividade: Se a tela for estreita demais, empilha as colunas */
+@media (max-width: 1200px) {
+    .main-wrapper {
+        flex-direction: column;
+    }
+    .side-panel {
+        position: static;
+        width: 100%;
+        min-width: 100%;
+    }
+}

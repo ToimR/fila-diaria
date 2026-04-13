@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>FIRMA - Selecionar Planilha</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/select_sheet.css') }}" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+<body>
+  <main class="container" role="main">
+    <section class="card">
+      <h1>Selecione a Planilha</h1>
+      <p class="subtitle">Escolha uma das planilhas disponíveis no arquivo enviado.</p>
+      <form action="{{ url_for('process_sheet', file_name=file_name) }}" method="get" novalidate>
+        <label for="sheet_name" class="label">Planilha</label>
+        <select name="sheet_name" id="sheet_name" required aria-required="true" class="select">
+          {% for sheet in sheet_names %}
+            <option value="{{ sheet }}">{{ sheet }}</option>
+          {% endfor %}
+        </select>
+        <input type="submit" value="Processar" class="btn-primary" />
+      </form>
+      <button type="button" onclick="window.location.href='/'" class="btn-back">Voltar</button>
+    </section>
+  </main>
+</body>
+</html>

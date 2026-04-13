@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>FIRMA - Upload de Arquivos</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/inicio.css') }}" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+<body>
+  <main class="container" role="main">
+    <h1>Selecione um arquivo Excel</h1>
+    <p>Por favor, escolha um arquivo Excel (.xls, .xlsx, .xlsm) para continuar.</p>
+    <form action="/upload" method="post" enctype="multipart/form-data" novalidate>
+      <input type="file" name="file" id="fileInput" accept=".xls,.xlsx,.xlsm" required aria-required="true" hidden />
+      <label for="fileInput" class="btn-select-file">Escolher Arquivo</label>
+      <input type="submit" value="Enviar" class="btn-back" />
+    </form>
+  </main>
+</body>
+</html>

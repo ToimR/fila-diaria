@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <title>FIRMA - Fila Diária</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}" />
+</head>
+<body>
+    <main class="container" role="main">
+        <h1>
+            FILA DIÁRIA DO DIA
+            {% if text and text != 'Texto não disponível' %}
+                {{ text }}
+            {% else %}
+                -
+            {% endif %}
+        </h1>
+
+        <div class="main-wrapper">
+            
+            <div class="tables-container">
+                {% for title, records in tables.items() %}
+                    <section aria-label="Tabela da área {{ title }}" class="table-section">
+                        <h2>{{ title }}</h2>
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ESCALA</th>
+                                        <th>ENTRADA</th>
+                                        <th>NOMES</th>
+                                        <th>STATUS</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for record in records %}
+                                        <tr>
+                                            <td>{{ record.ESCALA }}</td>
+                                            <td>{{ record.ENTRADA }}</td>
+                                            <td class="nome-txt">{{ record.NOMES }}</td>
+                                            <td>
+                                                <button type="button" class="btn-status btn-chegou">Chegou</button>
+                                                <button type="button" class="btn-status btn-desmarcar">Desmarcar</button>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                {% endfor %}
+                
+                <button type="button" onclick="window.location.href='/'" class="btn-back">
+                    Voltar para Início
+                </button>
+            </div>
+
+            <aside class="side-panel">
+                <div class="side-content-wrapper">
+                    
+                    <div class="column-confirmados">
+                        <h3>
+                            CONFIRMADOS 
+                            <span id="contador">0</span>
+                        </h3>
+                        <ul id="nomes-confirmados">
+                            </ul>
+                        <button type="button" id="btn-limpar-tudo">
+                            Limpar Lista
+                        </button>
+                    </div>
+
+                    <div class="column-notas">
+                        <div class="post-it-container">
+                            <label for="notas-trabalho">📝 Observações:</label>
+                            <textarea id="notas-trabalho" placeholder="Anotações aqui..." spellcheck="false"></textarea>
+                        </div>
+                    </div>
+
+                </div>
+            </aside>
+
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/contar_presenca.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/lista_resumida.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/statusButtons.js') }}"></script>
+</body>
+</html>
