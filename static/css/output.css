@@ -1,269 +1,185 @@
 /* ============================================================
    CONFIGURAÇÕES GERAIS E IDENTIDADE FIRMA
    ============================================================ */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Segoe UI', Arial, sans-serif;
+/* Limita o tamanho horizontal da entrada de hora */
+.input-hora { 
+    width: 70px !important; 
+    text-align: center; 
 }
 
-body {
-    background-color: #f4f7f9;
-    color: #333;
-}
-
-/* Banner da Empresa FIRMA no Topo */
-body::before {
-    content: "FIRMA";
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 80px;
-    background-color: #004a99; /* Azul Identidade */
-    color: #ffffff;
-    font-size: 2.2rem;
-    font-weight: 900;
-    letter-spacing: 5px;
-    border-bottom: 5px solid #ff6600; /* Laranja Identidade */
-    margin-bottom: 30px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-
-.container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 20px 40px;
-}
-
-h1 {
-    text-align: center;
-    color: #004a99;
-    margin-bottom: 30px;
-    text-transform: uppercase;
-}
-
-/* ============================================================
-   LAYOUT PRINCIPAL (GRID) E BARRA LATERAL
-   ============================================================ */
-.main-wrapper {
-    display: grid;
-    grid-template-columns: 1fr 600px; /* Espaço para tabelas e painel lateral */
-    gap: 30px;
-    align-items: start;
-}
-
-.side-panel {
-    position: sticky;
+/* Botão Flutuante */
+.btn-save-float {
+    position: fixed;
     top: 20px;
+    right: 20px;
+    z-index: 1000;
+    background-color: #004a99;
+    color: white;
+    border: none;
+    padding: 15px 25px;
+    border-radius: 50px;
+    font-weight: bold;
+    font-size: 1rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.2s;
 }
 
-/* Coloca a lista de confirmados e o Post-it lado a lado */
-.side-content-wrapper {
-    display: flex;
-    flex-direction: row;
-    gap: 20px;
-    align-items: start;
+.btn-save-float:hover {
+    background-color: #ff6600;
+    transform: scale(1.05);
 }
 
-/* ============================================================
-   ESTILO DAS TABELAS E DESTAQUE DINÂMICO
-   ============================================================ */
-.table-section {
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    margin-bottom: 25px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    border-left: 5px solid #004a99;
+/* Ajuste para inputs dentro da tabela */
+.edit-input {
+    padding: 6px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
 }
+/* Reaproveitando a identidade da página Home */
+
+* { box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
+
+
+
+body { background-color: #f0f4f8; margin: 0; padding-bottom: 50px; }
+
+
+
+.header-banner {
+
+    width: 100%; height: 100px;
+
+    background-color: #004a99; color: #ffffff;
+
+    display: flex; align-items: center; justify-content: center;
+
+    font-size: 2.5rem; font-weight: 900; letter-spacing: 6px;
+
+    border-bottom: 6px solid #ff6600; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+
+}
+
+
+
+.content-container { width: 90%; max-width: 900px; margin: 30px auto; }
+
+
+
+h1 { color: #004a99; margin-bottom: 30px; text-align: center; }
+
+
+
+h2 { color: #ff6600; margin-top: 40px; border-bottom: 2px solid #ddd; padding-bottom: 5px; }
+
+
 
 table {
-    width: 100%;
-    border-collapse: collapse;
+
+    width: 100%; border-collapse: collapse;
+
+    background: #fff; margin-top: 15px;
+
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+
 }
 
-th {
-    background-color: #f8f9fa;
-    color: #555;
-    text-align: left;
-    padding: 12px;
-    font-size: 0.85rem;
-    border-bottom: 2px solid #004a99;
+
+
+th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+
+th { background-color: #f8f9fa; color: #004a99; }
+
+
+
+.edit-input { width: 100%; padding: 5px; border: 1px solid #ccc; border-radius: 4px; }
+
+
+
+.actions { margin-top: 40px; text-align: center; }
+
+
+
+.btn-back {
+
+    background-color: #546e7a; color: white;
+
+    padding: 12px 25px; text-decoration: none;
+
+    border-radius: 6px; font-weight: bold;
+
 }
 
-td {
-    padding: 10px 12px;
-    border-bottom: 1px solid #eee;
+
+
+.btn-back:hover { background-color: #37474f; }
+
+/* --- Painel Flutuante de Presentes --- */
+.floating-presentes {
+    position: fixed;
+    top: 90px;
+    right: 20px;
+    width: 200px;
+    max-height: 350px;
+    background: #ffffff;
+    border: 2px solid #004a99;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 900;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+.floating-presentes h3 {
+    margin: 0 0 10px 0;
     font-size: 0.9rem;
+    color: #004a99;
+    text-align: center;
+    border-bottom: 1px solid #eee;
 }
 
-/* Classe aplicada pelo statusButtons.js ao clicar em "Chegou" */
-tr.highlight-yellow {
-    background-color: #FFFACD !important; /* Amarelo Palha */
-    transition: background-color 0.3s ease;
+.floating-presentes ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 0.8rem;
 }
 
-/* ============================================================
-   BOTÕES: CORES, HOVERS E STATUS
-   ============================================================ */
-.btn-status {
-    padding: 6px 12px;
+.floating-presentes li {
+    padding: 4px 0;
+    border-bottom: 1px solid #f4f4f4;
+}
+
+/* --- Botões S e N --- */
+.btn-group-chegou {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+}
+
+.btn-s, .btn-n {
+    width: 30px;
+    height: 30px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     font-weight: bold;
-    font-size: 0.8rem;
-    transition: background-color 0.2s;
-    margin-right: 5px;
-}
-
-/* Botão Chegou (Azul com Hover Claro) */
-.btn-chegou {
-    background-color: #004a99;
     color: white;
 }
 
-.btn-chegou:hover {
-    background-color: #0066cc; 
-}
+.btn-s { background-color: #28a745; }
+.btn-n { background-color: #dc3545; }
 
-/* Botão Desmarcar (Laranja com Hover Claro) */
-.btn-desmarcar {
-    background-color: #ff6600;
-    color: white;
-}
+.btn-s:hover { background-color: #218838; }
+.btn-n:hover { background-color: #c82333; }
 
-.btn-desmarcar:hover {
-    background-color: #ff8533;
-}
+/* --- Ajustes de Tabela --- */
+.input-hora { width: 70px !important; text-align: center; }
 
-/* Botão Voltar (Laranja) */
-.btn-back {
-    display: inline-block;
-    margin-top: 20px;
-    padding: 12px 24px;
-    background-color: #ff6600;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-/* ============================================================
-   ESTILO DO BOTÃO NA TABELA DE CONFIRMADOS
-   ============================================================ */
-
-#btn-limpar-tudo {
-    width: 100%;
-    background-color: #546e7a; /* Cinza azulado discreto */
-    color: white;
-    border: none;
-    padding: 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-top: 15px;
-    font-size: 0.85rem;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-#btn-limpar-tudo:hover {
-    background-color: #b71c1c; /* Vermelho alerta ao passar o mouse */
-    box-shadow: 0 4px 8px rgba(183, 28, 28, 0.3);
-    transform: translateY(-1px);
-}
-
-#btn-limpar-tudo:active {
-    transform: translateY(0);
-}
-
-/* ============================================================
-   CONFIRMADOS E POST-IT (AMARELO CLÁSSICO)
-   ============================================================ */
-.column-confirmados {
-    flex: 1;
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    min-width: 220px;
-}
-
-.column-notas {
-    flex: 1.2;
-}
-
-.post-it-container {
-    background-color: #fef68c; /* Amarelo Post-it clássico */
-    padding: 20px;
-    border-radius: 2px;
-    box-shadow: 5px 5px 10px rgba(0,0,0,0.1);
-    transform: rotate(1deg);
-    min-width: 250px;
-}
-
-#notas-trabalho {
-    width: 100%;
-    height: 300px;
-    background: transparent;
-    border: none;
-    resize: none;
-    font-family: 'Segoe UI', sans-serif;
-    outline: none;
-    color: #333;
-    padding-left: 25px; /* Espaço para os marcadores */
-    line-height: 30px;  /* Altura da linha (importante para alinhar com o fundo) */
-    
-    /* Cria as linhas pautadas pontilhadas */
-    background-image: radial-gradient(#00000022 1px, transparent 1px);
-    background-size: 100% 30px; /* Deve ser igual ao line-height */
-    background-position: 0 25px;
-    background-repeat: repeat-y;
-}
-
-/* Quando o post-it ganha foco, a linha fica um pouco mais nítida */
-#notas-trabalho:focus {
-    background-image: radial-gradient(#00000055 1px, transparent 1px);
-}
-
-/* ============================================================
-   RESPONSIVIDADE
-   ============================================================ */
-@media (max-width: 1200px) {
-    .main-wrapper { grid-template-columns: 1fr; }
-    .side-panel { position: static; }
-    .side-content-wrapper { justify-content: center; }
-}
-
-@media (max-width: 600px) {
-    .side-content-wrapper { flex-direction: column; align-items: center; }
-    .post-it-container { transform: rotate(0deg); width: 100%; }
-}
-
-/* Garante que o fundo amarelo cubra as células da linha */
-tr.highlight-yellow td {
-    background-color: #FFFACD !important;
-}
-
-/* Evita que a lista de nomes cresça demais verticalmente */
-#nomes-confirmados {
-    list-style: none;
-    font-size: 0.85rem; /* Define uma altura máxima baseada no tamanho da tela */
-    max-height: 60vh; 
-    overflow-y: auto; /* A barra de rolagem só aparece se ultrapassar o max-height */
-    padding-right: 5px;
-    margin-bottom: 10px;
-}
-
-/* Garante que cada nome ocupe apenas uma linha e tenha um respiro mínimo */ 
-#nomes-confirmados li {
-    padding: 2px 0;
-    border-bottom: 1px solid #eee; /* Linha sutil para separar nomes sem gastar espaço */
+.btn-save-float {
+    position: fixed; top: 20px; right: 20px;
+    background-color: #28a745; color: white;
+    padding: 12px 20px; border-radius: 50px;
+    border: none; font-weight: bold; cursor: pointer;
+    z-index: 1001; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
