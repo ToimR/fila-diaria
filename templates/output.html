@@ -1,91 +1,88 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-    <meta charset="UTF-8" />
-    <title>FIRMA - Fila Diária</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}" />
+    <meta charset="UTF-8">
+    <title>Fila - {{ text }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
 </head>
-<body>
-    <main class="container" role="main">
-        <h1>
-            FILA DIÁRIA DO DIA
-            {% if text and text != 'Texto não disponível' %}
-                {{ text }}
-            {% else %}
-                -
-            {% endif %}
-        </h1>
+<!-- Adicionado onload para carregar a lista flutuante com base no banco de dados -->
+<body onload="carregarListaInicial()">
+    <div class="header-banner">FIRMA</div>
 
-        <div class="main-wrapper">
-            
-            <div class="tables-container">
-                {% for title, records in tables.items() %}
-                    <section aria-label="Tabela da área {{ title }}" class="table-section">
-                        <h2>{{ title }}</h2>
-                        <div class="table-wrapper">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>ESCALA</th>
-                                        <th>ENTRADA</th>
-                                        <th>NOMES</th>
-                                        <th>STATUS</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for record in records %}
-                                        <tr>
-                                            <td>{{ record.ESCALA }}</td>
-                                            <td>{{ record.ENTRADA }}</td>
-                                            <td class="nome-txt">{{ record.NOMES }}</td>
-                                            <td>
-                                                <button type="button" class="btn-status btn-chegou">Chegou</button>
-                                                <button type="button" class="btn-status btn-desmarcar">Desmarcar</button>
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </section>
-                {% endfor %}
-                
-                <button type="button" onclick="window.location.href='/'" class="btn-back">
-                    Voltar para Início
-                </button>
+    {% if perfil == 'montador' %}
+    <button type="submit" form="form-fila" class="btn-save-float">💾 SALVAR</button>
+    {% endif %}
+
+    <!-- Painel Flutuante de Presentes -->
+    <div id="floating-list" class="floating-presentes">
+        <h3>Chegaram (<span id="count-presentes">0</span>)</h3>
+        <ul id="lista-nomes-chegaram"></ul>
+    </div>
+
+    <div class="content-container">
+        <h1>Fila do dia: {{ text }}</h1>
+
+        <form id="form-fila" action="{{ url_for('salvar_alteracoes') }}" method="POST">
+            <input type="hidden" name="data_arquivo" value="{{ data_iso }}">
+            <input type="hidden" name="perfil" value="{{ perfil }}">
+
+            {% for title, rows in tables.items() %}
+            <div class="table-section">
+                <h2>{{ title }}</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 80px;">Entrada</th>
+                            <th>Nomes</th>
+                            <th style="width: 80px; text-align: center;">Chegou</th>
+                            <th style="width: 100px;">Escala</th>
+                            <th>Observação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in rows %}
+                        <tr>
+                            <input type="hidden" name="id[]" value="{{ row['ID'] }}">
+                            <td>
+                                {% if perfil == 'montador' %}
+                                    <input type="text" name="entrada[]" value="{{ row['ENTRADA'] }}" class="edit-input input-hora">
+                                {% else %}
+                                    {{ row['ENTRADA'] }}
+                                {% endif %}
+                            </td>
+                            <td class="nome-coluna">{{ row['NOMES'] }}</td>
+                            
+                            <!-- Coluna Chegou -->
+                            <td>
+                                <div class="btn-group-chegou">
+                                    <!-- O segredo está aqui: se o banco diz que é 1, o Jinja marca o 'checked' -->
+                                    <input type="checkbox" name="status_marcado[]" value="{{ row['ID'] }}" 
+                                        id="chk-{{ row['ID'] }}" class="chk-status" 
+                                        {% if row['STATUS_MARCADO'] == 1 %}checked{% endif %} style="display:none;">
+        
+                                    <button type="button" class="btn-s" onclick="marcarChegada('{{ row['NOMES'] }}', '{{ row['ENTRADA'] }}', '{{ row['ID'] }}')">S</button>
+                                    <button type="button" class="btn-n" onclick="desmarcarChegada('{{ row['NOMES'] }}', '{{ row['ID'] }}')">N</button>
+                                </div>
+                            </td>
+
+                            <td>{{ row['ESCALA'] }}</td>
+                            <td>
+                                <input type="text" name="observacao[]" value="{{ row['OBSERVACAO'] or '' }}" class="edit-input" placeholder="...">
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
+            {% endfor %}
+        </form>
 
-            <aside class="side-panel">
-                <div class="side-content-wrapper">
-                    
-                    <div class="column-confirmados">
-                        <h3>
-                            CONFIRMADOS 
-                            <span id="contador">0</span>
-                        </h3>
-                        <ul id="nomes-confirmados">
-                            </ul>
-                        <button type="button" id="btn-limpar-tudo">
-                            Limpar Lista
-                        </button>
-                    </div>
-
-                    <div class="column-notas">
-                        <div class="post-it-container">
-                            <label for="notas-trabalho">📝 Observações:</label>
-                            <textarea id="notas-trabalho" placeholder="Anotações aqui..." spellcheck="false"></textarea>
-                        </div>
-                    </div>
-
-                </div>
-            </aside>
-
+        <div class="actions">
+            <a href="/" class="btn-back">Voltar para Início</a>
         </div>
-    </main>
+    </div>
 
-    <script src="{{ url_for('static', filename='js/contar_presenca.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/lista_resumida.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/statusButtons.js') }}"></script>
+    <!-- Link para o arquivo JavaScript Externo -->
+    <script src="{{ url_for('static', filename='js/output.js') }}"></script>
 </body>
 </html>
