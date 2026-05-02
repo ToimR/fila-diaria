@@ -1,0 +1,28 @@
+Sub Juntarpresentes()
+Dim nome As Range
+Dim colar As Range
+
+        ActiveSheet.Calculate
+        Range("N_ColNomesFinais").Value = ""
+        For Each nome In Range("N_ColNomes1")
+        If nome.Offset(0, -1) > "" Then
+        Range("N_OrgNomes").Offset(i, 0).Value = Replace(nome, "*", "")
+        i = i + 1
+        End If
+        Next nome
+
+        For Each nome In Range("N_ColNomes2")
+        If nome.Offset(0, -1) > "" Then
+        Range("N_OrgNomes").Offset(i, 0).Value = Replace(nome, "*", "")
+        i = i + 1
+        End If
+        Next nome
+ActiveSheet.Calculate
+        Range("Col_Hora").Sort Key1:=Range("Pri_Cel_Hora"), Order1:=xlAscending, Header:= _
+                xlGuess, OrderCustom:=1, MatchCase:=False, Orientation:=xlTopToBottom, _
+                DataOption1:=xlSortTextAsNumbers
+                Debug.Print Range("Col_Hora").Cells(2, 2)
+
+
+
+End Sub
