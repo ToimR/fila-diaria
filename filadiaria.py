@@ -14,20 +14,20 @@ def gerar_caminho_fila(data_str):
     dt = datetime.datetime.strptime(data_str, '%Y-%m-%d')
     meses_abreviados = {1: "JAN", 2: "FEV", 3: "MAR", 4: "ABR", 5: "MAI", 6: "JUN", 
                         7: "JUL", 8: "AGO", 9: "SET", 10: "OUT", 11: "NOV", 12: "DEZ"}
-    meses_completos = {1: "JANEIRO", 2: "FEVEREIRO", 3: "MARCO", 4: "ABRIL", 5: "MAIO", 6: "JUNHO", 
-                       7: "JULHO", 8: "AGOSTO", 9: "SETEMBRO", 10: "OUTUBRO", 11: "NOVEMBRO", 12: "DEZEMBRO"}
+    meses_completos = {1: "Janeiro", 2: "Fevereiro", 3: "Março", 4: "Abril", 5: "Maio", 6: "Junho", 
+                       7: "Julho", 8: "Agosto", 9: "Setembro", 10: "Outubro", 11: "Novembro", 12: "Dezembro"}
     dia_semana_pt = {'SUN': 'DOM', 'MON': 'SEG', 'TUE': 'TER', 'WED': 'QUA', 
-                     'THU': 'QUI', 'FRI': 'SEX', 'SAT': 'SAB'}
+                     'THU': 'QUI', 'FRI': 'SEX', 'SAT': 'SÁB'}
     
     mes_abrev = meses_abreviados[dt.month]
     mes_nome = meses_completos[dt.month]
     dia = dt.strftime('%d')
     mes_num = dt.strftime('%m') # Ex: 05
     dia_sem = dia_semana_pt[dt.strftime('%a').upper()]
-    pasta_mes = f"{mes_num}-{mes_nome}"
+    pasta_mes = f"{mes_num} - {mes_nome} - {dt.year}"
     
     # Montagem do caminho local (C:\...)
-    caminho_local = rf"C:\FILA-CLARAS\FILA-{dt.year}\FILA-DIARIA\{pasta_mes}\{mes_abrev}-{dia}-{dia_sem} - TARDE-CLA.xls"
+    caminho_local = rf"C:\FILA-CLARAS\Fila {dt.year}\Fila Diária\Tarde\{pasta_mes}\{mes_abrev}-{dia}-{dia_sem} - TARDE-CLA.xls"
     
     return caminho_local
 
@@ -93,8 +93,9 @@ def processar_data():
     caminho_arquivo = gerar_caminho_fila(data_selecionada)
     
     if not os.path.exists(caminho_arquivo):
-        msg_erro = f"[ERRO] Arquivo não encontrado no caminho: {caminho_arquivo}"
-        return f"Erro: Arquivo não encontrado: {caminho_arquivo}"
+        print(f"[AVISO] Tentativa de acesso a arquivo inexistente: {caminho_arquivo}")
+        # Retorno de frase amigável para o navegador
+        return f"Arquivo da fila ainda não disponível para esta data ({data_selecionada})."
     
     conn = None # Inicializa a variável para garantir o fechamento no finally
     try:
@@ -193,12 +194,14 @@ def salvar_alteracoes():
     data_arquivo = request.form.get('data_arquivo')
     perfil = request.form.get('perfil')
     
-    # Pegamos as listas de dados enviadas pelo form
+    # Listas de dados enviadas pelo form
     ids = request.form.getlist('id[]')
     entradas = request.form.getlist('entrada[]')
+    nomes = request.form.getlist('nomes[]') # Captura os nomes que podem ter sido editados
+    escalas = request.form.getlist('escala[]') # Captura as escalas (importante para não perder dados)
     observacoes = request.form.getlist('observacao[]')
     
-    # Capturamos apenas os IDs que estão marcados (checkboxes marcados)
+    # Captura apenas os IDs que estão marcados (checkboxes marcados)
     ids_marcados = request.form.getlist('status_marcado[]')
 
     db_path = get_db_path(data_arquivo)
@@ -207,16 +210,33 @@ def salvar_alteracoes():
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
 
-        # Atualizamos linha por linha no banco de dados
+        # --- LÓGICA DE REMOÇÃO (Botão -) ---
+        # Remove do banco de dados qualquer registro desta data que NÃO esteja na lista de IDs vinda do formulário
+        # Isso efetiva a remoção das linhas que o montador excluiu na interface.
+        if ids:
+            placeholders = ', '.join(['?'] * len(ids))
+            query_delete = f"DELETE FROM fila_diaria WHERE data_arquivo = ? AND id NOT IN ({placeholders})"
+            cursor.execute(query_delete, [data_arquivo] + ids)
+
+        # Atualiza linha por linha no banco de dados
         for i in range(len(ids)):
             # Define status 1 se o ID estiver na lista de marcados, caso contrário 0
             status = 1 if ids[i] in ids_marcados else 0
             
-            cursor.execute('''
-                UPDATE fila_diaria 
-                SET entrada = ?, observacao = ?, status_marcado = ? 
-                WHERE id = ?
-            ''', (entradas[i], observacoes[i], status, ids[i]))
+            # Verifica se o ID é novo (gerado pelo JS como 'new_...') ou existente
+            if str(ids[i]).startswith('new_'):
+                # Insere novo registro manual
+                cursor.execute('''
+                    INSERT INTO fila_diaria (data_arquivo, entrada, nomes, escala, observacao, status_marcado, posto)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                ''', (data_arquivo, entradas[i], nomes[i], escalas[i], observacoes[i], status, 'MANUAL'))
+            else:
+                # Atualizado para incluir o campo nomes e escala, garantindo a integridade dos dados
+                cursor.execute('''
+                    UPDATE fila_diaria 
+                    SET entrada = ?, nomes = ?, escala = ?, observacao = ?, status_marcado = ? 
+                    WHERE id = ?
+                ''', (entradas[i], nomes[i], escalas[i], observacoes[i], status, ids[i]))
 
         conn.commit()
         conn.close()
@@ -254,36 +274,19 @@ def exibir_tabela(data):
         df['STATUS_MARCADO'] = df['STATUS_MARCADO'].fillna(0).astype(int)
     if 'OBSERVACAO' in df.columns:
         df['OBSERVACAO'] = df['OBSERVACAO'].fillna('')
+    if 'ESCALA' in df.columns:
+        df['ESCALA'] = df['ESCALA'].fillna('')
 
-    posto_titles = {
-        'CLA': 'CLARAS', 'CTL': 'CENTRAL', 'CEI': 'CEILANDIA',
-        'SAM': 'SAMAMBAIA', 'PAS': 'PÁTIO ASA SUL', 'PAC': 'PÁTIO ÁGUAS CLARAS', 
-        'GERENTE': 'GERENTES'
-    }
-
-    if 'POSTO' not in df.columns:
-        return "Erro: Coluna POSTO não encontrada no banco de dados."
-
-    tables = {}
-    # Itera sobre os postos configurados para separar as tabelas no HTML
-    for posto_code, title in posto_titles.items():
-        subset = df[df['POSTO'].str.contains(posto_code, na=False, case=False)].copy()
-        if not subset.empty:
-            # Garante ordenação por horário na exibição
-            subset.sort_values(by='ENTRADA', inplace=True)
-            tables[title] = subset.to_dict(orient='records')
-
-    # Agrupa o que não se encaixou nos postos principais
-    combined_codes = '|'.join(posto_titles.keys())
-    other_rows = df[~df['POSTO'].str.contains(combined_codes, na=False, case=False)].copy()
-    if not other_rows.empty:
-        other_rows.sort_values(by='ENTRADA', inplace=True)
-        tables['OUTROS'] = other_rows.to_dict(orient='records')
+    # --- NOVA LÓGICA DE CLASSIFICAÇÃO ÚNICA ---
+    # Ordena primeiro por ENTRADA (horário) e depois por NOMES (alfabético)
+    if not df.empty:
+        df = df.sort_values(by=['ENTRADA', 'NOMES'], ascending=[True, True])
     
-    # Retornamos o template passando:
-    # text: a data formatada para o usuário (DD/MM/AAAA)
-    # data_iso: a data original para links e formulários (YYYY-MM-DD)
-    return render_template('output.html', tables=tables, text=data_formatada, data_iso=data, perfil=perfil)
+    # Converte o DataFrame classificado em uma lista única de dicionários
+    lista_pilotos = df.to_dict(orient='records')
+    
+    # Retornamos o template passando a lista única em vez do dicionário 'tables'
+    return render_template('output.html', pilotos=lista_pilotos, text=data_formatada, data_iso=data, perfil=perfil)
 
 @app.route('/')
 def home():
@@ -291,4 +294,4 @@ def home():
 
 if __name__ == '__main__':
     # Uso do Waitress para servir a aplicação de forma estável
-    serve(app, host='192.168.1.13', port=5000)
+    serve(app, host='10.66.24.105', port=8502)
