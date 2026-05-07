@@ -10,7 +10,7 @@ echo.
 timeout /t 2
 :: Abre o navegador padrão no endereço do servidor
 :: O comando 'start' seguido de uma URL faz o Windows usar o navegador padrão
-start http://192.168.1.13:5000
+start http://10.66.24.105:8502
 
 echo Aguardando inicializacao...
 echo.
@@ -19,6 +19,6 @@ echo.
 powershell -windowstyle minimized -command ""
 
 :: Executa o servidor Python
-C:\filadiaria202604\.venv\Scripts\python.exe -m waitress --threads=6 --host=192.168.1.13 --port=5000 filadiaria:app
+"C:\FILA-DIARIA\.venv\Scripts\python.exe" -m waitress --threads=6 --host=10.66.24.105 --port=8502 filadiaria:app
 
 pause
